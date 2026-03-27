@@ -1,0 +1,14 @@
+run_name: debug_run
+seed: 42
+
+data:
+  train_file: data/debug/train.jsonl
+
+model:
+  model_name_or_path: dummy-model
+
+training:
+  output_dir: outputs/debug_run
+  max_steps: 1
+
+run_infer_after_train: false
