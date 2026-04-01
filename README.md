@@ -1,42 +1,212 @@
 # COMP0087 Stage 1
 
-This repository is for Stage 1 of the COMP0087 group project.
+## Overview
 
-## Goal
-Build a runnable Stage 1 SFT pipeline that can:
+This repository contains the Stage 1 SFT pipeline for the COMP0087 group project.
 
-- read unified data
-- preprocess data
-- initialize training
-- save checkpoint
-- run minimal inference check
+The current integrated version supports:
 
-## Structure
+- config-based training entry
+- debug / small / full config files
+- data loading and preprocessing
+- LoRA-based Stage 1 training
+- checkpoint saving
+- minimal post-training inference verification
 
-- `train_sft.py`: main training entry
-- `configs/debug.yaml`: debug config
-- `src/data/`: data loading
-- `src/preprocessing/`: preprocessing
-- `src/training/`: trainer building
-- `src/utils/`: config and utilities
-- `data/debug/`: debug samples
-- `outputs/`: checkpoints and outputs
+The debug smoke pipeline has been verified locally.
 
-## Current status
+## Repository Structure
 
-Initial repository skeleton for Stage 1 integration.
+- `configs/`: yaml configs for debug / small / full runs
+- `data/`: debug data and dataset preparation scripts
+- `outputs/`: local checkpoints and run outputs
+- `scripts/`: helper scripts for preprocessing / debug / training
+- `src/`: core implementation
+- `make_ablation_configs.py`: helper script for config generation
+- `member6_log_and_run_guide.md`: additional run notes
+- `requirements.txt`: python dependencies
+- `run_infer.py`: minimal post-training inference entry
+- `train_sft.py`: main Stage 1 training entry
 
+## Environment Setup
 
-
-
-
-## Member 6: Configs, Run Scripts, and Minimal Verification
-
-This branch adds the Stage 1 helper pipeline for configuration management, smoke testing, and minimal post-training verification.
-
-### 1. Run the debug smoke pipeline
-
-Use the debug script to run the smallest end-to-end pipeline once:
+Install dependencies with:
 
 ```bash
-bash scripts/run_debug.sh
+pip install -r requirements.txt
+```
+
+## Config Files
+
+Current config files include:
+
+- `configs/debug.yaml` — smallest local smoke test config
+- `configs/small.yaml` — small-scale run config
+- `configs/full.yaml` — full run config
+
+For first-time verification, always start with:
+
+```text
+configs/debug.yaml
+```
+
+## Data
+
+### Debug data
+
+The debug smoke test uses:
+
+```text
+data/debug/train.jsonl
+```
+
+### Data preparation scripts
+
+The repository also includes data preparation utilities under `data/`, such as:
+
+- `prepare_finqa.py`
+- `prepare_convfinqa.py`
+- `prepare_multihiertt.py`
+- `merge_datasets.py`
+
+## Main Entry Points
+
+### Training entry
+
+```bash
+python train_sft.py --config configs/debug.yaml
+```
+
+### Inference entry
+
+```bash
+python run_infer.py --help
+```
+
+## Verified Debug Smoke Pipeline
+
+The following command has been verified locally:
+
+```bash
+python train_sft.py --config configs/debug.yaml
+```
+
+This debug run successfully completed:
+
+- config loading
+- debug data loading
+- preprocessing
+- trainer initialization
+- training
+- checkpoint saving
+- automatic minimal post-training inference check
+
+## Manual Minimal Inference Check
+
+The following command has also been verified locally:
+
+```bash
+python run_infer.py \
+  --config configs/debug.yaml \
+  --checkpoint_dir outputs/debug_run/checkpoint-last \
+  --input_file data/debug/train.jsonl \
+  --output_file outputs/debug_run/manual_infer_predictions.jsonl
+```
+
+This command successfully generated prediction output and summary files.
+
+## Expected Outputs
+
+For a verified debug run, outputs are written under:
+
+```text
+outputs/debug_run/
+```
+
+Typical files include:
+
+- `checkpoint-5/`
+- `checkpoint-last/`
+- `infer_predictions.jsonl`
+- `manual_infer_predictions.jsonl`
+- `infer_summary.json`
+- `run_meta.json`
+- `trainer_state.json`
+- `processed_preview.jsonl`
+
+These files are local run artifacts and should generally not be committed to GitHub.
+
+## Example Workflow
+
+### Step 1: install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 2: run debug training
+
+```bash
+python train_sft.py --config configs/debug.yaml
+```
+
+### Step 3: run manual inference check
+
+```bash
+python run_infer.py \
+  --config configs/debug.yaml \
+  --checkpoint_dir outputs/debug_run/checkpoint-last \
+  --input_file data/debug/train.jsonl \
+  --output_file outputs/debug_run/manual_infer_predictions.jsonl
+```
+
+## Scripts
+
+Helper scripts are located in `scripts/`.
+
+Examples include:
+
+- `scripts/run_debug.sh`
+- `scripts/run_train.sh`
+- `scripts/preprocess.py`
+- `scripts/prompting.py`
+
+## Notes for Team Members
+
+- Use `configs/debug.yaml` first before trying larger configs.
+- Do not upload large local checkpoints or output artifacts to GitHub.
+- Keep `outputs/` ignored by git.
+- Update README if entry points, config paths, or output paths change.
+- Use the verified commands above as the current baseline smoke test.
+
+## Current Status
+
+Current integrated status:
+
+- Stage 1 repository structure completed
+- debug / small / full config files available
+- training entry verified
+- minimal inference entry verified
+- debug smoke pipeline verified locally
+
+## Recommended .gitignore
+
+```gitignore
+outputs/
+*.pt
+*.bin
+*.safetensors
+__pycache__/
+*.pyc
+.DS_Store
+```
+
+## Handover Note
+
+This repository is currently in an integrated Stage 1 state with a verified local debug pipeline.
+
+For handover or further testing, start from:
+
+```bash
+python train_sft.py --config configs/debug.yaml
+```
